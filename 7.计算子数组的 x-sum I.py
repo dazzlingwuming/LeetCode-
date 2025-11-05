@@ -42,9 +42,52 @@ class Solution:
             nums[i] = x_sum
         return nums[:n - k + 1]
 
+
+
+class Solution_1:
+    def findXSum(self, nums: List[int], k: int, x: int) -> List[int]:
+
+        #思路：
+        '''
+        对于每个长度为k的子数组，统计每个数字的出现频率
+
+        根据频率和数值对元素进行排序（频率高的在前，频率相同时数值大的在前）,但是为了提高效率，可以使用窗口滑动的方式
+
+        每一个窗口的和相加及是最终的答案
+        '''
+        n = len(nums)
+        freq = {}
+        result = []
+        #初始化第一个窗口
+        for i in range(k):
+            freq[nums[i]] = freq.get(nums[i], 0) + 1
+
+        #开始滑动窗口
+        for i in range(n - k + 1):
+            #根据频率和数值对元素进行排序
+            sorted_freq = sorted(freq.items(),key = lambda i : (-i[1], -i[0]))
+            #取前x个元素，计算这些元素在子数组中出现的所有次数的和
+            x_sum = 0
+            for j in range(min(x, len(sorted_freq))):
+                num, count = sorted_freq[j]
+                x_sum += num * count
+            result.append(x_sum)
+            #滑动窗口
+            if i + k < n:
+                left_num = nums[i]
+                right_num = nums[i + k]
+                freq[left_num] -= 1
+                if freq[left_num] == 0:
+                    del freq[left_num]
+                freq[right_num] = freq.get(right_num, 0) + 1
+        return result
+
+
+
+
 if __name__ == "__main__":
-    s = Solution()
-    nums = [1,2,2,3,4]
-    k = 3
+    s = Solution_1()
+    nums =  [1,1,2,2,3,4,2,3]
+    k = 6
     x = 2
     print(s.findXSum(nums, k, x))
